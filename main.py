@@ -1,31 +1,28 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from src.infra.book_schema import BookSchema
+
 app = FastAPI()
 
-class Item(BaseModel):
-    title: str
-    text: str = None
-    is_done: bool = False
-
-items = []
+books = []
 
 @app.get("/")
 def root():
     return { "Hello": "World" }
 
-@app.post("/items")
-def create_item(item: Item):
-    items.append(item)
-    return items
+@app.post("/book")
+def create_item(book: BookSchema):
+    books.append(book)
+    return books
 
-@app.get("/items", response_model=list[Item])
-def get_all_items(limit: int = 10):
-    return items[0:limit]
+@app.get("/books", response_model=list[BookSchema])
+def get_all_books(limit: int = 10):
+    return books[0:limit]
 
-@app.get("/items/{item_id}", response_model=Item)
-def get_item_by_id(item_id: int) -> Item:
-    if item_id < len(items):
-        return items[items]
+@app.get("/books/{book_id}", response_model=BookSchema)
+def get_item_by_id(book_id: int) -> BookSchema:
+    if book_id < len(books):
+        return books[book_id]
     else:
-        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+        raise HTTPException(status_code=404, detail=f"Book {book_id} not found")
