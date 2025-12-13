@@ -22,22 +22,9 @@ class Entity:
 
     @classmethod
     def restore_from_database(cls, **kwargs):
-        """
-        Restaura uma entidade a partir dos dados do banco de dados.
-        
-        Espera 'id' como um dos argumentos (UUID ou string).
-        Subclasses podem sobrescrever para adicionar lógica customizada.
-        
-        Args:
-            **kwargs: Dados da entidade (deve incluir 'id')
-        
-        Returns:
-            Uma instância da entidade
-        """
         if 'id' not in kwargs:
             raise ValueError(f"{cls.__name__} requer 'id' para ser restaurado do banco de dados")
         
-        # Converte string para UUID se necessário
         if isinstance(kwargs['id'], str):
             kwargs['id'] = UUID(kwargs['id'])
         

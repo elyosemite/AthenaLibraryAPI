@@ -2,9 +2,9 @@ from typing import Optional
 from sqlalchemy import select
 
 from src.domain.book import Book
-from .database import engine
-from .book import book_table # data model
 from src.infra.book_schema import BookSchema
+from .database import engine
+from .book import book_table
 
 class BookRepository:
     def insert(self, book: Book) -> None:
