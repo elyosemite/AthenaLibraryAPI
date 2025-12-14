@@ -11,34 +11,41 @@ from .book_author import book_author_table
 class BookRepository:
     def insert(self, book: Book) -> None:
 
-        # Insert a book
-        bookQuery = book_table.insert().values(
-            id=str(book.id),
-            title=book.title,
-            description=book.description
-        )
-
-        authors_data = [
-            { "name": author.name } for author in book.authors
-        ]
-
-        # If there is a authors, so insert them
-        authorQuery = author_table.insert().values(authors_data)
-
         with engine.begin() as conn:
-            bookResult = conn.execute(bookQuery)
-            authorResult = conn.execute(authorQuery)
-            
-            bookId = bookResult.inserted_primary_key[0]
-            authorId = authorResult.inserted_primary_key[0]
+            # Insert a book
+            bookQuery = book_table.insert().values(
+                id=str(book.id),
+                title=book.title,
+                description=book.description
+            )
+            conn.execute(bookQuery)
 
-            # If there is a authors, so bind them to book (many-to-many)
-            book_author_query = book_author_table.insert().values(
-                book_id=bookId,
-                author_id=authorId
+            # insert Author
+            authors_data = [
+                { "name": author.name } for author in book.authors
+            ]
+
+            # If there is a authors, so insert them
+            authorQuery = (
+                author_table
+                .insert()
+                .values(authors_data)
+                .returning(author_table.c.id) # is just work in POstgreSQL and SQLite 3
             )
 
-            return Book(bookId, book.title, book.description)
+            author_ids = conn.execute(authorQuery).scalars().all()
+            
+            book_author_data = [
+                {
+                    "book_id": str(book.id),
+                    "author_id": author_id
+                }
+                for author_id in author_ids
+            ]
+
+            conn.execute(
+                book_author_table.insert().values(book_author_data)
+            )
 
     def select(self, book: Book) -> Optional[Book]:
         smtm = select(book_table).where(book_table.c.title == book.title)
