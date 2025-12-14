@@ -1,7 +1,15 @@
 from pydantic import BaseModel
-from typing import Optional, List
 
 class BookSchema(BaseModel):
-    id: int
+    id: str
     title: str
     description: str
+
+class AuthorSchema(BaseModel):
+    id: str
+    name: str
+
+class BookAuthorSchema(BaseModel):
+    id: int
+    book_id: str
+    author_id: str
