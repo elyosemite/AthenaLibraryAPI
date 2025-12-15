@@ -30,7 +30,7 @@ class BookRepository:
                 author_table
                 .insert()
                 .values(authors_data)
-                .returning(author_table.c.id) # is just work in POstgreSQL and SQLite 3
+                .returning(author_table.c.id)
             )
 
             author_ids = conn.execute(authorQuery).scalars().all()
